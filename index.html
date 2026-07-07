@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WAYPOINT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{--bg:#090b12;--panel:#111522;--text:#f7f3ea;--muted:#9299aa;--amber:#ffb84d;--cyan:#58d8ff;--accent:#ffb84d;--line:rgba(255,255,255,.09);--mx:50%;--my:50%}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#000;color:var(--text);font-family:Manrope,sans-serif}body{overflow-x:hidden}button,a{font:inherit}button{color:inherit}
+#app{min-height:100vh;position:relative;isolation:isolate;overflow:hidden}
+.bg,.grid,.grain,.cursor-glow{position:fixed;inset:0;pointer-events:none}
+.grid{z-index:-4;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(circle,#000 5%,transparent 78%)}
+.grain{z-index:-1;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.cursor-glow{z-index:-3;background:radial-gradient(260px circle at var(--mx) var(--my),color-mix(in srgb,var(--accent) 9%,transparent),transparent 72%)}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);opacity:.12;z-index:-5;pointer-events:none}.o1{width:540px;height:540px;background:var(--amber);left:-280px;top:-230px;animation:a 18s ease-in-out infinite alternate}.o2{width:620px;height:620px;background:var(--cyan);right:-360px;bottom:-330px;animation:b 23s ease-in-out infinite alternate}
+@keyframes a{to{transform:translate(42vw,48vh) scale(.8)}}@keyframes b{to{transform:translate(-38vw,-44vh) scale(1.15)}}@keyframes in{from{opacity:0;transform:translateY(20px);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}
+nav{height:78px;padding:0 5vw;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:10}.logo{border:0;background:none;display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.04em;cursor:pointer}.mark{width:13px;height:13px;background:linear-gradient(135deg,var(--amber),var(--cyan));border-radius:50% 50% 50% 12%;box-shadow:0 0 20px rgba(88,216,255,.4)}.navnote{font:11px DM Mono;color:var(--muted);letter-spacing:.12em}
+main{min-height:calc(100vh - 78px);padding:45px 5vw 90px}.screen{width:min(1200px,100%);margin:auto;animation:in .5s cubic-bezier(.2,.8,.2,1)}
+.hero{max-width:920px;margin:7vh auto 58px;text-align:center}.eyebrow{font:11px DM Mono;letter-spacing:.18em;color:var(--amber);margin-bottom:24px}.hero h1{font-size:clamp(55px,8.5vw,120px);line-height:.84;letter-spacing:-.075em;margin:0;font-weight:800}.hero h1 span{background:linear-gradient(90deg,var(--amber),#ffe1a3 48%,var(--cyan));-webkit-background-clip:text;color:transparent}.hero p{max-width:610px;margin:28px auto 0;color:var(--muted);font-size:18px;line-height:1.6}
+.category-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:34px}.category{min-height:190px;padding:22px;border:1px solid var(--line);background:linear-gradient(145deg,rgba(20,25,40,.78),rgba(10,13,22,.65));backdrop-filter:blur(15px);border-radius:28px 9px 28px 9px;text-align:left;cursor:pointer;position:relative;overflow:hidden;transition:.28s}.category:nth-child(2n){transform:translateY(18px)}.category:hover{transform:translateY(-7px);border-color:color-mix(in srgb,var(--c) 55%,transparent);box-shadow:0 25px 70px rgba(0,0,0,.35)}.category:nth-child(2n):hover{transform:translateY(11px)}.category:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:var(--c);filter:blur(70px);opacity:.07;right:-80px;bottom:-90px}.category:hover:after{opacity:.2}.cat-icon{width:48px;height:48px;border:1px solid var(--line);display:grid;place-items:center;border-radius:16px 5px 16px 5px;font-size:25px;margin-bottom:35px;background:rgba(255,255,255,.03)}.cat-name{font-size:19px;font-weight:750}.cat-desc{font-size:13px;color:var(--muted);margin-top:7px;line-height:1.5}.arrow{position:absolute;right:20px;top:18px;color:#626979}
+.back{background:none;border:0;padding:0;color:var(--muted);cursor:pointer;font:11px DM Mono;letter-spacing:.1em;margin-bottom:34px}.back:hover{color:var(--text)}
+.head{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:34px}.head h2{font-size:clamp(48px,7vw,92px);letter-spacing:-.065em;line-height:.9;margin:0}.head p{max-width:350px;color:var(--muted);line-height:1.6;margin:0}
+.tabs{display:flex;gap:9px;overflow-x:auto;flex-wrap:nowrap;margin-bottom:30px;padding:2px 2px 8px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:0 0 auto;border:1px solid var(--line);background:rgba(255,255,255,.025);padding:11px 15px;border-radius:999px;cursor:pointer;color:var(--muted);transition:.2s}.tab:hover,.tab.active{color:#090b12;background:var(--accent);border-color:var(--accent)}
+.site-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.site{display:block;text-decoration:none;color:inherit;min-height:205px;border:1px solid var(--line);background:linear-gradient(145deg,rgba(19,24,39,.82),rgba(10,13,22,.7));border-radius:24px 8px 24px 8px;padding:22px;position:relative;overflow:hidden;transition:.27s}.site:hover{transform:translateY(-6px);border-color:color-mix(in srgb,var(--accent) 50%,transparent);box-shadow:0 24px 65px rgba(0,0,0,.35)}.site-top{display:flex;align-items:center;justify-content:space-between}.favicon{width:46px;height:46px;border-radius:14px 5px 14px 5px;background:rgba(255,255,255,.05);border:1px solid var(--line);display:grid;place-items:center;font-size:22px}.open{font-size:20px;color:#656c7c;transition:.2s}.site:hover .open{color:var(--accent);transform:translate(3px,-3px)}.site h3{font-size:24px;margin:30px 0 8px;letter-spacing:-.03em}.site p{font-size:13px;line-height:1.55;color:var(--muted);margin:0}.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:18px}.chip{font:9px DM Mono;letter-spacing:.07em;padding:6px 8px;border:1px solid var(--line);border-radius:999px;color:#a9afbd}.count{font:11px DM Mono;color:#606777;letter-spacing:.1em;margin-top:26px}
+@media(max-width:900px){.category-grid{grid-template-columns:repeat(2,1fr)}.site-grid{grid-template-columns:repeat(2,1fr)}.head{display:block}.head p{margin-top:18px}.category:nth-child(2n){transform:none}}
+@media(max-width:580px){nav{padding:0 18px}.navnote{display:none}main{padding:30px 16px 70px}.hero{margin-top:4vh}.category-grid,.site-grid{grid-template-columns:1fr}.category{min-height:155px}.cat-icon{margin-bottom:24px}.head h2{font-size:52px}}
+
+/* Sharp background redesign — no giant blurred blobs */
+.orb{display:none!important}
+#app::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-3;
+  background:
+    radial-gradient(circle at 12% 22%,rgba(255,255,255,.55) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 74% 18%,rgba(88,216,255,.65) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 88% 68%,rgba(255,184,77,.55) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 32% 78%,rgba(255,255,255,.45) 0 1px,transparent 1.5px);
+  background-size:190px 190px,260px 260px,330px 330px,410px 410px;
+  animation:starDrift 34s linear infinite;
+  opacity:.45;
+}
+#app::after{
+  content:"";position:fixed;left:0;right:0;top:-2px;height:1px;z-index:-2;
+  background:linear-gradient(90deg,transparent,rgba(88,216,255,.5),rgba(255,184,77,.45),transparent);
+  box-shadow:0 0 14px rgba(88,216,255,.28);
+  pointer-events:none;
+  animation:scan 10s linear infinite;
+}
+.grid{
+  background-image:
+    linear-gradient(rgba(255,255,255,.032) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.032) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 14%,#000 82%,transparent 100%);
+  animation:gridMove 22s linear infinite;
+}
+.grid::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,transparent 49.8%,rgba(88,216,255,.10) 50%,transparent 50.2%),
+    linear-gradient(transparent 49.8%,rgba(255,184,77,.08) 50%,transparent 50.2%);
+  background-size:360px 360px;
+}
+@keyframes starDrift{to{background-position:190px 95px,-130px 260px,330px -165px,-205px 410px}}
+@keyframes gridMove{to{background-position:72px 72px}}
+@keyframes scan{0%{top:0;opacity:0}8%{opacity:.65}92%{opacity:.35}100%{top:100vh;opacity:0}}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="grid"></div><div class="grain"></div><div class="cursor-glow"></div>
+  
+  <nav>
+    <button id="logoBtn" class="logo"><span class="mark"></span>WAYPOINT</button>
+    <span class="navnote">THE INTERNET, WITH DIRECTIONS.</span>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<script>
+const data={
+ bored:{name:"I'M BORED",color:"#ffb84d",desc:"Pick the exact kind of distraction you want.",tabs:{
+  "Start Here":[["Neal.fun","https://neal.fun/","◌","Beautifully made interactive experiments and internet toys.",["INTERACTIVE","WEIRD"]],["The Useless Web","https://theuselessweb.com/","?","One button. One completely unnecessary website.",["RANDOM","CHAOS"]],["Bored Button","https://www.boredbutton.com/","●","A quick doorway to random things to do online.",["RANDOM","QUICK"]]],
+  "5 Minutes":[["Quick, Draw!","https://quickdraw.withgoogle.com/","✎","Draw badly and let a neural network guess what it is.",["DRAW","GAME"]],["Pointer Pointer","https://pointerpointer.com/","☝","Move your cursor and watch the internet point at it.",["WEIRD","QUICK"]],["Little Alchemy 2","https://littlealchemy2.com/","✦","Combine simple things and accidentally lose an hour.",["PUZZLE","CASUAL"]]],
+  "Rabbit Holes":[["Wikipedia Random","https://en.wikipedia.org/wiki/Special:Random","W","Start reading about something you never planned to care about.",["READ","RABBIT HOLE"]],["TV Tropes","https://tvtropes.org/","T","A dangerously deep encyclopedia of storytelling patterns.",["STORIES","RABBIT HOLE"]],["Atlas Obscura","https://www.atlasobscura.com/","◎","Strange places, hidden history and unusual discoveries.",["PLACES","WEIRD"]]],
+  "Relax":[["Window Swap","https://www.window-swap.com/","▣","Look through someone else's window somewhere in the world.",["CALM","WORLD"]],["This Is Sand","https://thisissand.com/","⌁","Make strangely relaxing digital sand art.",["ART","RELAXING"]],["A Soft Murmur","https://asoftmurmur.com/","≈","Mix ambient sounds for focus or calm.",["SOUND","AMBIENT"]]]
+ }},
+ sports:{name:"SPORTS",color:"#ff7657",desc:"Choose a sport, then choose what you actually want from it.",tabs:{
+  "Football":[["Sofascore","https://www.sofascore.com/","⚡","Live scores, lineups, tables and detailed match statistics.",["LIVE","STATS"]],["FotMob","https://www.fotmob.com/","⚽","Clean football scores, fixtures, news and ratings.",["SCORES","NEWS"]],["Transfermarkt","https://www.transfermarkt.com/","↗","Transfers, squads, player values and football data.",["TRANSFERS","DATA"]],["FBref","https://fbref.com/","▥","Deep football statistics for teams and players.",["STATS","ANALYSIS"]]],
+  "Cricket":[["Cricbuzz","https://www.cricbuzz.com/","🏏","Fast scores, schedules, commentary and cricket news.",["LIVE","SCORES"]],["ESPNcricinfo","https://www.espncricinfo.com/","◉","Scorecards, records, articles and analysis.",["NEWS","RECORDS"]]],
+  "Formula 1":[["Formula 1","https://www.formula1.com/","🏎","Official schedules, standings, results and race news.",["OFFICIAL","RACING"]],["RaceFans","https://www.racefans.net/","◫","F1 news, discussion and motorsport coverage.",["NEWS","F1"]]],
+  "Basketball":[["NBA","https://www.nba.com/","🏀","Official scores, schedules, highlights and league coverage.",["NBA","VIDEO"]],["Basketball Reference","https://www.basketball-reference.com/","▥","Historical and current basketball statistics.",["STATS","HISTORY"]]],
+  "Tennis":[["ATP Tour","https://www.atptour.com/","🎾","Men's rankings, results, schedules and player profiles.",["TENNIS","RANKINGS"]],["WTA Tennis","https://www.wtatennis.com/","◉","Women's tennis rankings, results and news.",["TENNIS","NEWS"]]]
+ }},
+ watch:{name:"WATCH",color:"#ff7eb6",desc:"Pick a format instead of scrolling forever.",tabs:{
+  "Videos":[["YouTube","https://www.youtube.com/","▶","The giant library for almost every kind of video.",["VIDEO","EVERYTHING"]],["Vimeo Staff Picks","https://vimeo.com/channels/staffpicks","◇","Beautiful short films and creative videos.",["SHORT FILMS","CREATIVE"]]],
+  "Movies":[["JustWatch","https://www.justwatch.com/","J","Find where a movie or show is available to stream.",["FIND","STREAMING"]],["Internet Archive Films","https://archive.org/details/feature_films","🎞","Classic and public-domain films from a huge archive.",["CLASSICS","ARCHIVE"]]],
+  "Documentaries":[["Documentary Heaven","https://documentaryheaven.com/","◉","Documentaries organized by topic.",["DOCS","LEARN"]],["Top Documentary Films","https://topdocumentaryfilms.com/","T","Browse documentaries across science, history and society.",["DOCS","TOPICS"]]],
+  "Anime":[["MyAnimeList","https://myanimelist.net/","M","Discover anime, ratings, reviews and watchlists.",["ANIME","DISCOVER"]],["AniList","https://anilist.co/","A","Track and discover anime with a clean interface.",["TRACK","ANIME"]]]
+ }},
+ learn:{name:"LEARN",color:"#9d8cff",desc:"Choose what kind of learning mood you're in.",tabs:{
+  "Courses":[["Khan Academy","https://www.khanacademy.org/","K","Free structured lessons across many subjects.",["COURSES","FREE"]],["MIT OpenCourseWare","https://ocw.mit.edu/","M","Free course materials from MIT classes.",["UNIVERSITY","FREE"]],["Coursera","https://www.coursera.org/","C","Courses from universities and organizations.",["COURSES","CERTIFICATES"]]],
+  "Coding":[["freeCodeCamp","https://www.freecodecamp.org/","</>","Coding lessons, certifications and projects.",["CODING","PROJECTS"]],["The Odin Project","https://www.theodinproject.com/","O","A project-based path for learning web development.",["WEB DEV","PROJECTS"]],["MDN Learn","https://developer.mozilla.org/en-US/docs/Learn_web_development","M","Excellent web development learning material.",["WEB","DOCS"]]],
+  "Languages":[["Duolingo","https://www.duolingo.com/","あ","Game-like language practice and vocabulary.",["LANGUAGE","PRACTICE"]],["Language Transfer","https://www.languagetransfer.org/","L","Free audio courses focused on understanding languages.",["AUDIO","FREE"]]],
+  "Science":[["Brilliant","https://brilliant.org/","✦","Interactive math, science and computing lessons.",["STEM","INTERACTIVE"]],["PhET Simulations","https://phet.colorado.edu/","⚛","Interactive science and math simulations.",["SCIENCE","SIMULATIONS"]],["NASA Science","https://science.nasa.gov/","✧","Explore space and Earth science.",["SPACE","SCIENCE"]]],
+  "Random Knowledge":[["Wikipedia Random","https://en.wikipedia.org/wiki/Special:Random","?","Learn something you never intended to search for.",["RANDOM","KNOWLEDGE"]],["Today I Found Out","https://www.todayifoundout.com/","!","Interesting explanations and unusual facts.",["FACTS","EXPLAINERS"]]]
+ }},
+ tools:{name:"TOOLS",color:"#58d8ff",desc:"Find the right browser tool by what you need to fix.",tabs:{
+  "Images":[["Photopea","https://www.photopea.com/","▧","Powerful Photoshop-like editing in the browser.",["EDITOR","PSD"]],["remove.bg","https://www.remove.bg/","✂","Automatically remove image backgrounds.",["BACKGROUND","FAST"]],["Squoosh","https://squoosh.app/","◫","Compress and convert images with visual controls.",["COMPRESS","CONVERT"]]],
+  "PDF":[["PDF24 Tools","https://tools.pdf24.org/","PDF","Merge, split, compress and convert PDFs.",["PDF","FREE"]],["TinyWow PDF","https://tinywow.com/tools/pdf","⌘","A collection of quick PDF utilities.",["PDF","TOOLS"]]],
+  "Files":[["SwissTransfer","https://www.swisstransfer.com/","⇧","Send large files with generous limits.",["TRANSFER","SHARE"]],["WeTransfer","https://wetransfer.com/","W","Simple file transfers through a shareable link.",["FILES","SHARE"]]],
+  "Text":[["Diffchecker","https://www.diffchecker.com/","≠","Compare two pieces of text and spot differences.",["COMPARE","TEXT"]],["WordCounter","https://wordcounter.net/","#","Count words, characters and inspect writing statistics.",["WORDS","COUNT"]]],
+  "Converters":[["CloudConvert","https://cloudconvert.com/","↻","Convert between many file formats.",["CONVERT","FILES"]],["Convertio","https://convertio.co/","⇄","Quick online conversion for common file types.",["CONVERT","ONLINE"]]],
+  "Everyday":[["TinyWow","https://tinywow.com/","⌘","A giant collection of small browser tools.",["TOOLS","FILES"]],["Calculator.net","https://www.calculator.net/","=","Calculators for finance, health, math and more.",["CALCULATE","EVERYDAY"]]]
+ }},
+ play:{name:"PLAY",color:"#ffd45c",desc:"Choose the kind of game you feel like playing.",tabs:{
+  "Quick Games":[["Poki","https://poki.com/","◆","A huge collection of instant browser games.",["ARCADE","BROWSER"]],["CrazyGames","https://www.crazygames.com/","C","Quick browser games across many genres.",["GAMES","FREE"]]],
+  "Puzzle":[["Wordle","https://www.nytimes.com/games/wordle/index.html","W","The famous daily five-letter word puzzle.",["WORDS","DAILY"]],["2048","https://play2048.co/","2","Simple number puzzle that becomes a problem very quickly.",["PUZZLE","CASUAL"]]],
+  "Strategy":[["Lichess","https://lichess.org/","♞","Free chess, puzzles, analysis and multiplayer.",["CHESS","FREE"]],["Chess.com","https://www.chess.com/","♟","Chess games, lessons and puzzles.",["CHESS","LEARN"]]],
+  "Indie":[["itch.io HTML5","https://itch.io/games/html5","◈","Experimental and indie browser games.",["INDIE","WEIRD"]],["Newgrounds Games","https://www.newgrounds.com/games","N","Independent web games and animation culture.",["INDIE","WEB"]]],
+  "Geography":[["GeoGuessr","https://www.geoguessr.com/","◎","Guess locations using Street View clues.",["GEOGRAPHY","GAME"]],["Seterra","https://www.geoguessr.com/quiz/seterra","◉","Geography quizzes for countries, flags and maps.",["MAPS","QUIZ"]]]
+ }},
+ explore:{name:"EXPLORE",color:"#54e0b5",desc:"Choose how far away you want to go.",tabs:{
+  "Earth":[["Google Earth","https://earth.google.com/web/","🌍","Explore cities and landscapes around Earth in 3D.",["EARTH","3D"]],["MapCrunch","https://www.mapcrunch.com/","◎","Teleport to random Street View locations.",["RANDOM","MAPS"]]],
+  "Space":[["NASA Eyes","https://eyes.nasa.gov/","✧","Interactive views of missions, planets and the solar system.",["SPACE","NASA"]],["Solar System Scope","https://www.solarsystemscope.com/","☉","Explore an interactive model of the solar system.",["PLANETS","3D"]]],
+  "History":[["Ancient Earth","https://dinosaurpictures.org/ancient-earth/","◴","See Earth across hundreds of millions of years.",["HISTORY","EARTH"]],["World History Encyclopedia","https://www.worldhistory.org/","H","Explore civilizations, people and historical events.",["HISTORY","READ"]]],
+  "Places":[["Atlas Obscura","https://www.atlasobscura.com/","◎","Discover unusual places and hidden history.",["PLACES","WEIRD"]],["Window Swap","https://www.window-swap.com/","▣","Look through windows around the world.",["CALM","WORLD"]]]
+ }},
+ music:{name:"MUSIC",color:"#ff7aa8",desc:"Listen, discover, make or just put something on.",tabs:{
+  "Listen":[["Spotify","https://open.spotify.com/","♫","Music, artists, albums and playlists.",["STREAMING","PLAYLISTS"]],["SoundCloud","https://soundcloud.com/","S","Music, mixes and independent creators.",["MUSIC","CREATORS"]]],
+  "Discover":[["Radio Garden","https://radio.garden/","◎","Spin the globe and hear live radio anywhere.",["RADIO","WORLD"]],["Every Noise at Once","https://everynoise.com/","∞","Explore a giant map of music genres.",["GENRES","DISCOVERY"]]],
+  "Create":[["Chrome Music Lab","https://musiclab.chromeexperiments.com/","▦","Playful experiments for making music.",["CREATE","INTERACTIVE"]],["BeepBox","https://www.beepbox.co/","▥","Create chiptune-style music in your browser.",["CREATE","CHIPTUNE"]]],
+  "Focus":[["A Soft Murmur","https://asoftmurmur.com/","≈","Mix ambient sounds for focus.",["AMBIENT","FOCUS"]],["myNoise","https://mynoise.net/","~","Customizable soundscapes and noise generators.",["SOUND","FOCUS"]]]
+ }},
+ code:{name:"CODING",color:"#73f0a8",desc:"Pick what you're trying to do with code.",tabs:{
+  "Practice":[["LeetCode","https://leetcode.com/","✓","Algorithms and data structure problems.",["DSA","PROBLEMS"]],["HackerRank","https://www.hackerrank.com/","H","Coding challenges across languages and skills.",["CHALLENGES","PRACTICE"]],["Codewars","https://www.codewars.com/","C","Short coding kata ranked by difficulty.",["KATA","PRACTICE"]]],
+  "Build Online":[["CodePen","https://codepen.io/","</>","Quick frontend experiments.",["HTML","CSS","JS"]],["Replit","https://replit.com/","▶","Write and run projects in the browser.",["IDE","BUILD"]],["StackBlitz","https://stackblitz.com/","⚡","Fast browser development environments.",["WEB","IDE"]]],
+  "Documentation":[["MDN Web Docs","https://developer.mozilla.org/","M","Excellent documentation for web technologies.",["DOCS","WEB"]],["DevDocs","https://devdocs.io/","D","Many programming documentation sets in one interface.",["DOCS","FAST"]]],
+  "Open Source":[["GitHub","https://github.com/","⌘","Explore, host and collaborate on code.",["PROJECTS","OPEN SOURCE"]],["GitLab","https://gitlab.com/","G","Code hosting and collaborative development.",["GIT","PROJECTS"]]],
+  "Debug & Ask":[["Stack Overflow","https://stackoverflow.com/","?","Answers to specific programming problems.",["QUESTIONS","DEBUGGING"]],["Regex101","https://regex101.com/","/","Build, test and explain regular expressions.",["REGEX","DEBUG"]]]
+ }},
+ design:{name:"DESIGN",color:"#ff8f70",desc:"Choose whether you want to create, collect or get inspired.",tabs:{
+  "UI Inspiration":[["Dribbble","https://dribbble.com/","◈","Visual design inspiration from creators.",["UI","IDEAS"]],["Awwwards","https://www.awwwards.com/","A","Ambitious and unusual website design.",["WEB","INSPIRATION"]],["Mobbin","https://mobbin.com/","M","Real mobile and web interface patterns.",["UI","PATTERNS"]]],
+  "Create":[["Figma","https://www.figma.com/","F","Design interfaces and prototypes.",["UI","PROTOTYPE"]],["Canva","https://www.canva.com/","C","Quick graphics, presentations and social visuals.",["GRAPHICS","TEMPLATES"]]],
+  "Colors":[["Coolors","https://coolors.co/","◐","Generate and explore color palettes.",["COLOR","PALETTE"]],["Adobe Color","https://color.adobe.com/","◒","Explore color harmonies and palettes.",["COLOR","TOOLS"]]],
+  "Fonts":[["Fontjoy","https://fontjoy.com/","Aa","Generate font pairings.",["FONTS","PAIRING"]],["Google Fonts","https://fonts.google.com/","G","Browse and use open web fonts.",["FONTS","WEB"]]],
+  "Assets":[["Unsplash","https://unsplash.com/","▧","High-quality photography.",["PHOTOS","ASSETS"]],["Pexels","https://www.pexels.com/","P","Free photos and videos.",["PHOTOS","VIDEO"]],["Lucide","https://lucide.dev/icons/","◇","A clean open-source icon library.",["ICONS","OPEN SOURCE"]]]
+ }},
+ news:{name:"NEWS",color:"#7ea8ff",desc:"Pick the kind of update you actually care about.",tabs:{
+  "World":[["Reuters","https://www.reuters.com/","R","Straightforward reporting across major global topics.",["WORLD","REPORTING"]],["BBC News","https://www.bbc.com/news","B","Global news, explainers and live coverage.",["GLOBAL","LIVE"]]],
+  "India":[["The Hindu","https://www.thehindu.com/","H","Indian and international reporting and analysis.",["INDIA","NEWS"]],["Indian Express","https://indianexpress.com/","I","Indian news, explainers and opinion.",["INDIA","EXPLAINERS"]]],
+  "Tech":[["Hacker News","https://news.ycombinator.com/","Y","Technology and startup stories discussed by the community.",["TECH","COMMUNITY"]],["The Verge","https://www.theverge.com/","V","Technology, products and digital culture.",["TECH","CULTURE"]],["TechCrunch","https://techcrunch.com/","T","Startups, technology companies and funding news.",["STARTUPS","TECH"]]],
+  "Science":[["ScienceDaily","https://www.sciencedaily.com/","S","Research news across science and health.",["SCIENCE","RESEARCH"]],["NASA News","https://www.nasa.gov/news/","✧","Space agency missions and discoveries.",["SPACE","NEWS"]]],
+  "Mix":[["Google News","https://news.google.com/","G","A broad overview from many publishers.",["AGGREGATOR","TOP STORIES"]],["Ground News","https://ground.news/","◐","Compare how different sources cover the same stories.",["COMPARE","NEWS"]]]
+ }},
+ random:{name:"SURPRISE ME",color:"#d58cff",desc:"The strange shelf. Pick a flavor of unexpected.",tabs:{
+  "Weird":[["Pointer Pointer","https://pointerpointer.com/","☝","The internet finds someone pointing at your cursor.",["WEIRD","INTERACTIVE"]],["The Useless Web","https://theuselessweb.com/","?","A doorway to useless websites.",["RANDOM","CHAOS"]]],
+  "Beautiful":[["Zoomquilt","https://zoomquilt.org/","∞","An endlessly zooming collaborative artwork.",["ART","HYPNOTIC"]],["Silk","http://weavesilk.com/","✦","Create flowing symmetrical digital art.",["ART","INTERACTIVE"]]],
+  "Interactive":[["Patatap","https://patatap.com/","♫","Turn keyboard presses into sounds and animations.",["MUSIC","INTERACTIVE"]],["Quick, Draw!","https://quickdraw.withgoogle.com/","✎","Draw and let a neural network guess.",["DRAW","GAME"]]],
+  "Calm":[["This Is Sand","https://thisissand.com/","⌁","Create relaxing digital sand art.",["ART","RELAXING"]],["Window Swap","https://www.window-swap.com/","▣","Watch views through windows around the world.",["CALM","WORLD"]]]
+ }},
+ read:{name:"READ",color:"#f0a66e",desc:"Find something worth reading based on how much time you have.",tabs:{
+  "Articles":[["Longreads","https://longreads.com/","L","Excellent long-form stories and essays.",["LONGFORM","STORIES"]],["Aeon","https://aeon.co/","A","Essays on philosophy, science and culture.",["ESSAYS","IDEAS"]]],
+  "Books":[["Project Gutenberg","https://www.gutenberg.org/","G","A huge library of free public-domain ebooks.",["BOOKS","FREE"]],["Open Library","https://openlibrary.org/","O","Explore and borrow books digitally.",["BOOKS","LIBRARY"]]],
+  "Short Reads":[["Wikipedia Random","https://en.wikipedia.org/wiki/Special:Random","W","A random topic in one click.",["RANDOM","READ"]],["Arts & Letters Daily","https://www.aldaily.com/","A","A curated mix of essays, reviews and ideas.",["CURATED","IDEAS"]]]
+ }},
+ create:{name:"CREATE",color:"#f36fd2",desc:"Make something instead of just consuming something.",tabs:{
+  "Write":[["Notion","https://www.notion.so/","N","Write, organize and build pages.",["WRITING","NOTES"]],["Hemingway Editor","https://hemingwayapp.com/","H","Make writing clearer and easier to read.",["WRITING","EDIT"]]],
+  "Draw":[["Kleki","https://kleki.com/","✎","A simple browser painting tool.",["DRAW","PAINT"]],["Aggie.io","https://aggie.io/","A","Draw together with other people online.",["DRAW","COLLAB"]]],
+  "Music":[["Chrome Music Lab","https://musiclab.chromeexperiments.com/","♫","Playful music creation experiments.",["MUSIC","CREATE"]],["BeepBox","https://www.beepbox.co/","▥","Make chiptune music in the browser.",["MUSIC","CHIPTUNE"]]],
+  "3D":[["Spline","https://spline.design/","S","Create interactive 3D scenes in the browser.",["3D","DESIGN"]],["Tinkercad","https://www.tinkercad.com/","T","Simple browser-based 3D design.",["3D","BEGINNER"]]]
+ }},
+ productivity:{name:"GET THINGS DONE",color:"#7bd7c4",desc:"Focus, organize and stop losing track of things.",tabs:{
+  "Focus":[["Pomofocus","https://pomofocus.io/","◴","A clean Pomodoro timer for focused sessions.",["FOCUS","TIMER"]],["A Soft Murmur","https://asoftmurmur.com/","≈","Ambient sounds for concentration.",["SOUND","FOCUS"]]],
+  "Notes":[["Notion","https://www.notion.so/","N","Notes, pages, databases and planning.",["NOTES","ORGANIZE"]],["Obsidian","https://obsidian.md/","O","Connected notes and personal knowledge management.",["NOTES","KNOWLEDGE"]]],
+  "Plan":[["Trello","https://trello.com/","T","Visual boards for tasks and projects.",["TASKS","BOARDS"]],["Todoist","https://todoist.com/","✓","Simple task lists and planning.",["TASKS","PLAN"]]]
+ }}
+};
+const cats=[
+ ["bored","◌","I'M BORED","Distractions, rabbit holes and calm corners."],
+ ["sports","⚡","SPORTS","Football, cricket, F1, basketball and more."],
+ ["watch","▶","WATCH","Videos, movies, documentaries and anime."],
+ ["learn","✦","LEARN","Courses, coding, languages and science."],
+ ["tools","⌘","TOOLS","Images, PDFs, files, text and converters."],
+ ["play","◆","PLAY","Quick, puzzle, strategy and indie games."],
+ ["explore","◎","EXPLORE","Earth, space, history and strange places."],
+ ["music","♫","MUSIC","Listen, discover, create and focus."],
+ ["code","{ }","CODING","Practice, build, debug and explore open source."],
+ ["design","◇","DESIGN","UI, colors, fonts, assets and inspiration."],
+ ["news","▤","NEWS","World, India, tech and science."],
+ ["read","Aa","READ","Articles, books and short reads."],
+ ["create","✎","CREATE","Write, draw, make music and build in 3D."],
+ ["productivity","✓","GET THINGS DONE","Focus, notes and planning."],
+ ["random","?","SURPRISE ME","Weird, beautiful and unexpected websites."]
+];
+
+let current = null;
+let activeTab = null;
+const main = document.getElementById("main");
+
+function accent(color) {
+  document.documentElement.style.setProperty("--accent", color);
+}
+
+function make(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
+function home() {
+  current = null;
+  activeTab = null;
+  accent("#ffb84d");
+  main.replaceChildren();
+
+  const screen = make("section", "screen");
+  const hero = make("div", "hero");
+  hero.innerHTML = '<div class="eyebrow">● PICK A DIRECTION</div><h1>WHERE DO YOU<br>WANT TO <span>GO?</span></h1><p>Pick a direction, then narrow it down. Hand-picked places worth visiting.</p>';
+  screen.appendChild(hero);
+
+  const grid = make("div", "category-grid");
+
+  cats.forEach(c => {
+    const id = c[0];
+    const btn = make("button", "category");
+    btn.type = "button";
+    btn.style.setProperty("--c", data[id].color);
+
+    const arrow = make("span", "arrow", "↗");
+    const icon = make("span", "cat-icon", c[1]);
+    const name = make("div", "cat-name", c[2]);
+    const desc = make("div", "cat-desc", c[3]);
+
+    btn.append(arrow, icon, name, desc);
+    btn.addEventListener("click", () => openCat(id));
+    grid.appendChild(btn);
+  });
+
+  screen.appendChild(grid);
+  main.appendChild(screen);
+}
+
+function openCat(id) {
+  if (!data[id]) return;
+  current = id;
+  activeTab = Object.keys(data[id].tabs)[0];
+  accent(data[id].color);
+  renderCat();
+}
+
+function renderCat() {
+  const d = data[current];
+  const sites = d.tabs[activeTab] || [];
+  main.replaceChildren();
+
+  const screen = make("section", "screen");
+
+  const back = make("button", "back", "← ALL DIRECTIONS");
+  back.type = "button";
+  back.addEventListener("click", home);
+  screen.appendChild(back);
+
+  const head = make("div", "head");
+  head.append(make("h2", "", d.name), make("p", "", d.desc));
+  screen.appendChild(head);
+
+  const tabNames = Object.keys(d.tabs);
+  if (tabNames.length > 1) {
+    const tabs = make("div", "tabs");
+    tabNames.forEach(name => {
+      const tab = make("button", "tab" + (name === activeTab ? " active" : ""), name);
+      tab.type = "button";
+      tab.addEventListener("click", () => {
+        activeTab = name;
+        renderCat();
+      });
+      tabs.appendChild(tab);
+    });
+    screen.appendChild(tabs);
+  }
+
+  const siteGrid = make("div", "site-grid");
+  sites.forEach(s => {
+    const card = make("a", "site");
+    card.href = s[1];
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
+
+    const top = make("div", "site-top");
+    top.append(make("span", "favicon", s[2]), make("span", "open", "↗"));
+    card.appendChild(top);
+    card.appendChild(make("h3", "", s[0]));
+    card.appendChild(make("p", "", s[3]));
+
+    const chips = make("div", "chips");
+    s[4].forEach(label => chips.appendChild(make("span", "chip", label)));
+    card.appendChild(chips);
+    siteGrid.appendChild(card);
+  });
+
+  screen.appendChild(siteGrid);
+  screen.appendChild(make("div", "count", sites.length + " PLACES · CLICK ANY CARD TO OPEN"));
+  main.appendChild(screen);
+}
+
+document.getElementById("logoBtn").addEventListener("click", home);
+document.addEventListener("mousemove", e => {
+  document.documentElement.style.setProperty("--mx", e.clientX + "px");
+  document.documentElement.style.setProperty("--my", e.clientY + "px");
+});
+
+home();
+</script>
+</body>
+</html>
